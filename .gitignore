@@ -1,0 +1,9 @@
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+logs/
+secrets/
+*.json
+!package.json
+.agents/
