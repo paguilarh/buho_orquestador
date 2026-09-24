@@ -17,11 +17,13 @@ jobs:
       - name: Correr los tests
         run: |
           docker run --rm \
+            --entrypoint "" \
             -v "$PWD/dags:/opt/airflow/dags" \
             -v "$PWD/plugins:/opt/airflow/plugins" \
             -v "$PWD/include:/opt/airflow/include" \
             -v "$PWD/tests:/opt/airflow/tests" \
             -e AIRFLOW__CORE__LOAD_EXAMPLES=false \
-            -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-ci.db             -e PYTHONPATH=/opt/airflow/plugins \
+            -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-ci.db \
+            -e PYTHONPATH=/opt/airflow/plugins \
             buho-orchestration:ci \
             pytest tests/ -v

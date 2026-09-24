@@ -213,7 +213,7 @@ Esperado: FAIL con `ModuleNotFoundError: No module named 'buho.callbacks'`
 >
 > ```bash
 > docker build -t buho-orchestration:dev .
-> docker run --rm -v "$PWD:/opt/airflow" -w /opt/airflow >   -e PYTHONPATH=/opt/airflow/plugins >   -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-dev.db >   buho-orchestration:dev pytest tests/test_callbacks.py -v
+> docker run --rm --entrypoint "" -v "$PWD:/opt/airflow" -w /opt/airflow -e PYTHONPATH=/opt/airflow/plugins -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-dev.db buho-orchestration:dev pytest tests/test_callbacks.py -v
 > ```
 >
 > Lo mismo aplica a las tareas 3 y 4.
@@ -1112,12 +1112,14 @@ jobs:
       - name: Correr los tests
         run: |
           docker run --rm \
+            --entrypoint "" \
             -v "$PWD/dags:/opt/airflow/dags" \
             -v "$PWD/plugins:/opt/airflow/plugins" \
             -v "$PWD/include:/opt/airflow/include" \
             -v "$PWD/tests:/opt/airflow/tests" \
             -e AIRFLOW__CORE__LOAD_EXAMPLES=false \
-            -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-ci.db             -e PYTHONPATH=/opt/airflow/plugins \
+            -e AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////tmp/airflow-ci.db \
+            -e PYTHONPATH=/opt/airflow/plugins \
             buho-orchestration:ci \
             pytest tests/ -v
 ```
@@ -1148,6 +1150,11 @@ jobs:
             docker compose -f infra/docker-compose.yml up -d --build
             docker compose -f infra/docker-compose.yml ps
 ```
+
+**`--entrypoint ""` no es opcional.** El entrypoint de la imagen de Airflow termina en
+`exec "airflow" "$@"`, así que sin anularlo el comando se convierte en `airflow pytest tests/ -v`
+y el CLI sale con código 2 antes de que pytest llegue a correr. Mismo motivo que el
+`entrypoint: ""` del servicio `airflow-test` en el compose.
 
 Los secretos `DROPLET_HOST` y `DROPLET_SSH_KEY` se cargan en Settings → Secrets del repo de
 GitHub. **El usuario los pone; el agente no los ve.**
