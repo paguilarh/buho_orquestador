@@ -7,3 +7,4 @@ secrets/
 *.json
 !package.json
 .agents/
+llaves/

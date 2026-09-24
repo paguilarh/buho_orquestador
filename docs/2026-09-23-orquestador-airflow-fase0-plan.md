@@ -994,6 +994,20 @@ git commit -m "feat: bootstrap de provisión del droplet"
 Esta tarea la ejecuta el usuario. Requiere `gcloud` — desde Cloud Shell o tras instalar el SDK.
 **No hay `gcloud` en la máquina de desarrollo actual.**
 
+- [ ] **Step 0: La vía corta — `infra/crear_service_accounts.sh`**
+
+Los pasos 1 a 3 de esta tarea están empaquetados en un script idempotente. Subirlo a Cloud
+Shell y correr:
+
+```bash
+bash crear_service_accounts.sh
+```
+
+Crea las tres SA (reutilizando las que ya existan), otorga los roles mínimos, genera las
+llaves en `./llaves/` con permisos `600` e imprime los pasos manuales que siguen. Los pasos
+1-3 de abajo quedan como referencia de qué hace el script y para ejecutarlos a mano si algo
+falla a medias.
+
 - [ ] **Step 1: Crear una SA por proyecto**
 
 Repetir para los tres proyectos, cambiando `PROYECTO` y `NOMBRE`:
